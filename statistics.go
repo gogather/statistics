@@ -55,6 +55,10 @@ func getLangOfRepos(reposName string, username string, token string) error {
 		return err
 	}
 
+	if msg, ok := langData.(map[string]interface{}); ok {
+		return errors.New(msg["message"].(string))
+	}
+
 	for k, v := range langData.(map[string]interface{}) {
 		if _, ok := langDataTotal[k]; ok {
 			langDataTotal[k] = langDataTotal[k].(float64) + v.(float64)
