@@ -1,6 +1,7 @@
 package statistics
 
 import (
+	"errors"
 	"github.com/gogather/com"
 )
 
@@ -8,11 +9,20 @@ var langDataTotal map[string]interface{}
 
 func GetRepos(username string, token string) (string, error) {
 	langDataTotal = make(map[string]interface{})
-	jsonRepos, _ := com.Get("https://api.github.com/users/" + username + "/repos?token=" + token)
+	jsonRepos, err := com.Get("https://api.github.com/users/" + username + "/repos?token=" + token)
+
+	if err != nil {
+		return "", err
+	}
+
 	repos, err := com.JsonDecode(jsonRepos)
 
 	if err != nil {
 		return "", err
+	} else {
+		if msg := repos.(map[string]interface{})["message"]; msg != nil {
+			return "", errors.New(msg.(string))
+		}
 	}
 
 	for _, v := range repos.([]interface{}) {
@@ -33,7 +43,12 @@ func GetRepos(username string, token string) (string, error) {
 }
 
 func getLangOfRepos(reposName string, username string, token string) error {
-	jsonLangData, _ := com.Get("https://api.github.com/repos/" + username + "/" + reposName + "/languages?token=" + token)
+	jsonLangData, err := com.Get("https://api.github.com/repos/" + username + "/" + reposName + "/languages?token=" + token)
+
+	if err != nil {
+		return err
+	}
+
 	langData, err := com.JsonDecode(jsonLangData)
 
 	if err != nil {
