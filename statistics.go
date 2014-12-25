@@ -19,10 +19,10 @@ func GetRepos(username string, token string) (string, error) {
 
 	if err != nil {
 		return "", err
-	} else {
-		if msg := repos.(map[string]interface{})["message"]; msg != nil {
-			return "", errors.New(msg.(string))
-		}
+	}
+
+	if msg, ok := repos.(map[string]interface{}); ok {
+		return "", errors.New(msg["message"].(string))
 	}
 
 	for _, v := range repos.([]interface{}) {
