@@ -56,7 +56,9 @@ func getLangOfRepos(reposName string, username string, token string) error {
 	}
 
 	if msg, ok := langData.(map[string]interface{}); ok {
-		return errors.New(msg["message"].(string))
+		if _, ok = msg["message"]; ok {
+			return errors.New(msg["message"].(string))
+		}
 	}
 
 	for k, v := range langData.(map[string]interface{}) {
