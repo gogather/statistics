@@ -5,6 +5,14 @@ import (
 	"github.com/gogather/com"
 )
 
+const (
+	_VERSION = "0.1.0307"
+)
+
+func Version() string {
+	return _VERSION
+}
+
 var langDataTotal map[string]interface{}
 
 func GetRepos(username string, token string) (string, error) {
