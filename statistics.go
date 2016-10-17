@@ -3,6 +3,8 @@ package statistics
 import (
 	"errors"
 	"github.com/gogather/com"
+	"github.com/gogather/com/http"
+	"github.com/gogather/com/log"
 )
 
 const (
@@ -14,18 +16,30 @@ func Version() string {
 }
 
 var langDataTotal map[string]interface{}
+var httpClient *http.HTTPClient
+
+func getHttpClien() *http.HTTPClient {
+	if httpClient == nil {
+		httpClient = http.NewHTTPClient()
+	}
+
+	return httpClient
+}
 
 func GetRepos(username string, token string) (string, error) {
 	langDataTotal = make(map[string]interface{})
-	jsonRepos, err := com.Get("https://api.github.com/users/" + username + "/repos?token=" + token)
+
+	jsonRepos, err := getHttpClien().Get("https://api.github.com/users/" + username + "/repos?access_token=" + token)
 
 	if err != nil {
+		log.Redln(err)
 		return "", err
 	}
 
 	repos, err := com.JsonDecode(jsonRepos)
 
 	if err != nil {
+		log.Redln(err)
 		return "", err
 	}
 
@@ -51,7 +65,7 @@ func GetRepos(username string, token string) (string, error) {
 }
 
 func getLangOfRepos(reposName string, username string, token string) error {
-	jsonLangData, err := com.Get("https://api.github.com/repos/" + username + "/" + reposName + "/languages?token=" + token)
+	jsonLangData, err := getHttpClien().Get("https://api.github.com/repos/" + username + "/" + reposName + "/languages?access_token=" + token)
 
 	if err != nil {
 		return err
